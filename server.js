@@ -10,25 +10,27 @@ app.post('/api/login', async (req, res) => {
     const { user, pass } = req.body;
     let browser;
     try {
-        console.log("Starting browser...");
+        console.log("Starting browser on Render...");
         browser = await puppeteer.launch({
             headless: "new",
+            // Render par executable path aksar automatic detect hota hai agar build sahi ho
             args: [
                 '--no-sandbox', 
                 '--disable-setuid-sandbox', 
                 '--disable-dev-shm-usage',
-                '--single-process'
+                '--single-process',
+                '--no-zygote'
             ]
         });
         const page = await browser.newPage();
         
-        // FIXED URL - No brackets
-        await page.goto('[https://www.instagram.com/accounts/login/](https://www.instagram.com/accounts/login/)', { 
+        // Asli URL - Bina kisi bracket ya link formatting ke
+        await page.goto('https://www.instagram.com/accounts/login/', { 
             waitUntil: 'networkidle2',
             timeout: 60000 
         });
         
-        console.log("Typing credentials...");
+        console.log("Attempting login for:", user);
         await page.waitForSelector('input[name="username"]', { timeout: 15000 });
         await page.type('input[name="username"]', user, { delay: 100 });
         await page.type('input[name="password"]', pass, { delay: 100 });
@@ -45,18 +47,17 @@ app.post('/api/login', async (req, res) => {
             return res.status(401).json({ success: false, message: errorMsg });
         }
 
-        console.log("Login Successful for: " + user);
+        console.log("Login Successful!");
         res.json({ success: true, message: "Login Successful" });
         await browser.close();
     } catch (e) {
-        console.error("Error:", e.message);
+        console.error("Engine Error:", e.message);
         if (browser) await browser.close();
         res.status(500).json({ success: false, message: "Engine Error: " + e.message });
     }
 });
 
-// Root route to check if server is alive
-app.get('/', (req, res) => res.send("Insta-Engine is running!"));
+app.get('/', (req, res) => res.send("Insta-Engine is Online"));
 
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log('Server live on port ' + PORT));
+app.listen(PORT, () => console.log('Server running on port ' + PORT));
