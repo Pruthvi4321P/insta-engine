@@ -10,7 +10,7 @@ app.post('/api/login', async (req, res) => {
     const { user, pass } = req.body;
     let browser;
     try {
-        console.log("Starting browser on Render...");
+        console.log("Insta-Engine v1.0.1: Starting browser on Render...");
         browser = await puppeteer.launch({
             headless: "new",
             // Render par executable path aksar automatic detect hota hai agar build sahi ho
@@ -57,7 +57,11 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-app.get('/', (req, res) => res.send("Insta-Engine is Online"));
+app.get('/', (req, res) => res.send("Insta-Engine is Online (v1.0.1)"));
 
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log('Server running on port ' + PORT));
+app.listen(PORT, () => {
+    console.log('=========================================');
+    console.log('Insta-Engine v1.0.1 is running on port ' + PORT);
+    console.log('=========================================');
+});
